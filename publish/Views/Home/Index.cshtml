@@ -1,0 +1,76 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>Google Sheet Import</h2>
+<div class="se-pre-con" style="display: none;"></div>
+<div class="box-body" style="display:block;margin-top:20px;">
+    @using (Html.BeginForm("Config", "Home", FormMethod.Post))
+    {
+        @model GoogleSheetImportWeb.Models.ConfigXMLModel
+        
+        <div class="config hidden">
+            <label>Google Client ID</label>
+            @Html.TextBoxFor(model => model.GoogleClientID, new { @autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.GoogleClientID, null, new { @class = "label label-danger" })
+        </div>
+
+        <div class="config hidden">
+            <label>Google Client Secret</label>
+            @Html.TextBoxFor(model => model.GoogleClientSecret, new { @autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.GoogleClientSecret, null, new { @class = "label label-danger" })
+        </div>
+
+        <div class="config">
+            <label>Google Sheet URL</label>
+            @Html.TextBoxFor(model => model.GoogleSheetUrl, new { @autocomplete = "off"})
+            @Html.ValidationMessageFor(model => model.GoogleSheetUrl, null, new { @class = "label label-danger" })
+        </div>
+
+        <div class="config">
+            <label>Google Sheet Name</label>
+            @Html.TextBoxFor(model => model.GoogleSheetName, new { @autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.GoogleSheetName, null, new { @class = "label label-danger" })
+        </div>
+
+        <div class="config">
+            <label>SQL Server</label>
+            @Html.TextBoxFor(model => model.SQLServer, new { @autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.SQLServer, null, new { @class = "label label-danger" })
+        </div>
+
+        <div class="config">
+            <label>SQL Username</label>
+            @Html.TextBoxFor(model => model.SQLUsername, new { @autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.SQLUsername, null, new { @class = "label label-danger" })
+        </div>
+
+        <div class="config">
+            <label>SQL Password</label>
+            @Html.TextBoxFor(model => model.SQLPassword, new { @autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.SQLPassword, null, new { @class = "label label-danger" })
+        </div>
+
+        <div class="config">
+            <label>Database Name</label>
+            @Html.TextBoxFor(model => model.DatabaseName, new { @autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.DatabaseName, null, new { @class = "label label-danger" })
+        </div>
+
+        <div class="config">
+            <label>Table Name</label>
+            @Html.TextBoxFor(model => model.TableName, new { @autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.TableName, null, new { @class = "label label-danger" })
+        </div>
+
+        <button class="btn btn-success config" type="submit" id="btn-submit">Load Data</button>
+    }
+</div>
+<script>
+
+    //==== Submit form
+    $("#btn-submit").on("click", function () {
+        $(".se-pre-con").show();
+    });
+
+</script>
