@@ -12,8 +12,10 @@ namespace GoogleSheetImportWeb.Service
         string connectionString = "";
         ConfigModel config = null;
 
+        /* init connection string */
         public DatabaseService()
         {
+            /* init connection string */
             config = UserConfig.ReadConfig();
 
             connectionString = string.Format("Data Source={0};Initial Catalog={1}; User Id={2}; Password={3}",
@@ -23,6 +25,7 @@ namespace GoogleSheetImportWeb.Service
                 config.SqlInfo.Password);
         }
 
+        /* get column name & type of tbl from db */
         public List<DataColumnModel> GetColumns()
         {
             List<DataColumnModel> listColumns = new List<DataColumnModel>();
@@ -31,6 +34,7 @@ namespace GoogleSheetImportWeb.Service
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (SqlCommand command = connection.CreateCommand())
                 {
+                    /* get column name from db */
                     command.CommandText = string.Format("SELECT c.COLUMN_NAME, c.DATA_TYPE FROM information_schema.columns c WHERE c.table_schema = 'dbo' AND c.table_name = '{0}' ORDER BY c.ORDINAL_POSITION", config.SqlInfo.TableName);
                     connection.Open();
                     using (var reader = command.ExecuteReader())
@@ -50,12 +54,14 @@ namespace GoogleSheetImportWeb.Service
             return listColumns.OrderBy(o => o.ColumnName).ToList();
         }
 
+        /* Insert data to sql */
         public bool InsertData(List<DataMapModel> mappings)
         {
             mappings = mappings.Where(o => !string.IsNullOrEmpty(o.ColumnName)).ToList();
             bool result = false;
             var columns = this.GetColumns();
 
+            /* get data from google sheet */
             GoogleService googleService = new GoogleService();
             var listData = googleService.GetSheet();
             if (listData.Count > 0)
@@ -67,6 +73,7 @@ namespace GoogleSheetImportWeb.Service
                     header.ColumnDataType = columns.Where(o => o.ColumnName == header.ColumnName).Select(o => o.DataType).FirstOrDefault();
                 }
 
+                /* make command string */
                 string sqlComm = string.Format("INSERT INTO {0} ", config.SqlInfo.TableName);
                 for (int i = 0; i < listData.Count; i++)
                 {
@@ -98,6 +105,7 @@ namespace GoogleSheetImportWeb.Service
                         sqlComm += ",";
                 }
 
+                /* execute sql command */
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 using (SqlCommand command = connection.CreateCommand())
                 {
@@ -110,6 +118,7 @@ namespace GoogleSheetImportWeb.Service
             return result;
         }
 
+        /* Check connect to SQL */
         public bool CheckConnectToSQLServer()
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -126,6 +135,7 @@ namespace GoogleSheetImportWeb.Service
             }
         }
 
+        /* format data to sql data type */
         private string GetValue(object value, string dataType)
         {
             string valueStr = value.ToString().Replace("'", "''");

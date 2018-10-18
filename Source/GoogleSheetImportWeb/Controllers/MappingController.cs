@@ -15,20 +15,22 @@ namespace GoogleSheetImportWeb.Controllers
         // GET: Mapping
         public ActionResult Index()
         {
+            /* get sheet data data */
             GoogleService googleService = new GoogleService();
-
             MappingModel model = new MappingModel()
             {
-                ListData = googleService.GetSheet(),
-                ListColumn = databaseService.GetColumns(),
+                ListData = googleService.GetSheet(), /* get sheet data */
+                ListColumn = databaseService.GetColumns(), /* get column name from sql */
             };
-
+            
+            /* validate data */
             if (model.ListData == null || !model.ListData.Any() || model.ListColumn == null || !model.ListColumn.Any())
             {
                 ModelState.AddModelError("Error", "Please check your config again");
                 return View(model);
             } 
             
+            /* make list map data from list data of sheet */
             if (model.ListData[0] != null && model.ListData[0].Any())
             {
                 var lstHeader = model.ListData[0];
@@ -83,6 +85,7 @@ namespace GoogleSheetImportWeb.Controllers
                     return View("Index", model);
                 }
 
+                /* inser data to sql */
                 var result = databaseService.InsertData(model.ListMapping);
                 if (result)
                 {

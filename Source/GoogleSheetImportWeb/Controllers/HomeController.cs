@@ -19,6 +19,7 @@ namespace GoogleSheetImportWeb.Controllers
         {
             return View(new ConfigXMLModel()
             {
+                /* get config from web.config */
                 GoogleClientID = ConfigurationManager.AppSettings["GoogleClientID"],
                 GoogleClientSecret = ConfigurationManager.AppSettings["GoogleClientSecret"],
                 GoogleSheetUrl = ConfigurationManager.AppSettings["GoogleSheetUrl"],
@@ -79,6 +80,7 @@ namespace GoogleSheetImportWeb.Controllers
                     return View("Index", model);
                 }
 
+                /* Save config  */
                 NameValueCollection nameValueCollection = new NameValueCollection();
                 nameValueCollection.Add("GoogleClientID", model.GoogleClientID);
                 nameValueCollection.Add("GoogleClientSecret", model.GoogleClientSecret);
@@ -103,14 +105,16 @@ namespace GoogleSheetImportWeb.Controllers
                         }
                     }
                 }
-                doc.Save(fileName);
+                doc.Save(fileName); /* save to web.config */
                 
+                /* check google sheet error */
                 GoogleService googleService = new GoogleService();
                 if (googleService.GetSheet() == null)
                 {
                     ModelState.AddModelError("ErrorGoogle", "Unable to connect to google service.");
                 }
 
+                /* check sql error */
                 DatabaseService databaseService = new DatabaseService();
                 if (!databaseService.CheckConnectToSQLServer())
                 {
@@ -128,6 +132,13 @@ namespace GoogleSheetImportWeb.Controllers
             }
             catch (Exception ex) { }
             return RedirectToAction("Index", "Mapping");
+        }
+
+        /* delete account when want to change account */
+        public bool ChangeAccount()
+        {
+            var result = UserConfig.DeleteToken();
+            return result;
         }
     }
 }

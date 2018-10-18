@@ -10,13 +10,13 @@
         @model GoogleSheetImportWeb.Models.ConfigXMLModel
 
         @Html.ValidationMessage("ErrorGoogle", null, new { @class = "label label-danger" })
-        <div class="config">
+        <div class="config hidden">
             <label>Google Client ID</label>
             @Html.TextBoxFor(model => model.GoogleClientID, new { @autocomplete = "off" })
             @Html.ValidationMessageFor(model => model.GoogleClientID, null, new { @class = "label label-danger" })
         </div>
 
-        <div class="config">
+        <div class="config hidden">
             <label>Google Client Secret</label>
             @Html.TextBoxFor(model => model.GoogleClientSecret, new { @autocomplete = "off" })
             @Html.ValidationMessageFor(model => model.GoogleClientSecret, null, new { @class = "label label-danger" })
@@ -66,14 +66,63 @@
             @Html.ValidationMessageFor(model => model.TableName, null, new { @class = "label label-danger" })
         </div>
 
+        <a href="#" class="btn btn-info" onclick="ChangeAccount(); return false;">Delete Credential</a>
         <button class="btn btn-success config" type="submit" id="btn-submit">Load Data</button>
     }
+</div>
+
+@*Modal cofirm Change Account*@ 
+<div class="modal" tabindex="-1" role="dialog" id="modal-change-acc">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="border:none;padding-bottom:0;">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="CloseModalChangeAcc(); return false;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="border:none;">
+                <h3 style="margin:0;">Are you sure?</h3>
+            </div>
+            <div class="modal-footer" style="border:none;">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="CloseModalChangeAcc(); return false;">No</button>
+                <button type="button" class="btn btn-primary" id="btn-submit-change-acc">Yes</button>
+            </div>
+        </div>
+    </div>
 </div>
 <script>
 
     //==== Submit form
     $("#btn-submit").on("click", function () {
         $(".se-pre-con").show();
+    });
+
+    //==== Submit Change Account
+    function ChangeAccount() {
+        $("#modal-change-acc").show();
+    }
+    function CloseModalChangeAcc() {
+        $("#modal-change-acc").hide();
+    }
+    $("#btn-submit-change-acc").on("click", function () {
+        $.ajax({
+            url: '@Url.Action("ChangeAccount", "Home")',
+            type: 'GET',
+            success: function (data) {
+                if (!data) {
+                    alert("Unable to change account. Please try again.");
+                } else {
+                    alert("Success.")
+                }
+                $("#modal-change-acc").hide();
+            },
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
     });
 
 </script>

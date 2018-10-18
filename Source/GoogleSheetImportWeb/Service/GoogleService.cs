@@ -21,7 +21,7 @@ namespace GoogleSheetImportWeb.Service
         string sheetName = "";
 
         static string[] Scopes = { SheetsService.Scope.SpreadsheetsReadonly, SheetsService.Scope.Spreadsheets };
-        static string ApplicationName = "Google Sheets API .NET Quickstart";
+        static string ApplicationName = "Google Sheets API .NET Quickstart"; /* google app */
 
         public GoogleService()
         {
@@ -35,6 +35,8 @@ namespace GoogleSheetImportWeb.Service
         {
             try
             {
+                /* get credential */
+                string fileName = HttpContext.Current.Server.MapPath("~/token.json");
                 UserCredential credential = credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
                     new ClientSecrets
                     {
@@ -44,7 +46,7 @@ namespace GoogleSheetImportWeb.Service
                     Scopes,
                     "user",
                     CancellationToken.None,
-                    new FileDataStore("token.json", true)).Result;
+                    new FileDataStore(fileName, true)).Result;
 
                 // Create Google Sheets API service.
                 var service = new SheetsService(new BaseClientService.Initializer()
@@ -63,6 +65,7 @@ namespace GoogleSheetImportWeb.Service
             return null;
         }
 
+        /* get sheet ID from sheet url */
         private string GetSpreadSheetId(string url)
         {
             Regex regex = new Regex("/spreadsheets/d/([a-zA-Z0-9-_]+)");
